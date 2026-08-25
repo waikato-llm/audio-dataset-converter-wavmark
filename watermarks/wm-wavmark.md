@@ -1,13 +1,15 @@
 # wm-wavmark
 
 Applies the WavMark watermarking: https://github.com/wavmark/wavmark
+Stores watermarking info in the meta-data under 'wavmark-info'.
 
 ```
 usage: wm-wavmark [-h] [-l {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
                   [-N LOGGER_NAME] [--disable] -p PAYLOAD [-d DEVICE]
                   [-m MIN_SNR] [-M MAX_SNR]
 
-Applies the WavMark watermarking: https://github.com/wavmark/wavmark
+Applies the WavMark watermarking: https://github.com/wavmark/wavmark Stores
+watermarking info in the meta-data under 'wavmark-info'.
 
 options:
   -h, --help            show this help message and exit

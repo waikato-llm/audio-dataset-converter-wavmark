@@ -10,6 +10,11 @@ from wai.logging import LOGGING_WARNING
 from adc.api import Watermarker, WatermarkDetector
 
 
+WAVMARK_BER = "wavmark-BER"
+WAVMARK_INFO = "wavmark-info"
+WAVMARK_PAYLOAD = "wavmark-info"
+
+
 class WavMarkMarker(Watermarker):
     """
     Applies the WavMark watermarking.
@@ -58,7 +63,7 @@ class WavMarkMarker(Watermarker):
         :return: the description
         :rtype: str
         """
-        return "Applies the WavMark watermarking: https://github.com/wavmark/wavmark"
+        return "Applies the WavMark watermarking: https://github.com/wavmark/wavmark\nStores watermarking info in the meta-data under '%s'." % WAVMARK_INFO
 
     def _create_argparser(self) -> argparse.ArgumentParser:
         """
@@ -132,7 +137,7 @@ class WavMarkMarker(Watermarker):
                               audio_format=data.audio_format, metadata=safe_deepcopy(data.get_metadata()))
         if not data_new.has_metadata():
             data_new.set_metadata(dict())
-        data_new.get_metadata()["wavmark-info"] = info
+        data_new.get_metadata()[WAVMARK_INFO] = info
         return data_new
 
 
@@ -178,7 +183,7 @@ class WavMarkDetector(WatermarkDetector):
         :return: the description
         :rtype: str
         """
-        return "For detecting WavMark watermarks: https://github.com/wavmark/wavmark\nStores the 'wavmark-BER' field in the metadata when supplying a payload to match against, with 0=perfect match and 100=no match all."
+        return "For detecting WavMark watermarks: https://github.com/wavmark/wavmark\nStores the BER under '%s' in the metadata when supplying a reference payload, with 0=perfect match and 100=no match all.\nStores detection info in the meta-data under '%s' and the actual payload under '%s'." % (WAVMARK_BER, WAVMARK_INFO, WAVMARK_PAYLOAD)
 
     def _create_argparser(self) -> argparse.ArgumentParser:
         """
@@ -232,14 +237,18 @@ class WavMarkDetector(WatermarkDetector):
         """
         watermarked_signal = data.audio
         payload_decoded, info = wavmark.decode_watermark(self._model, watermarked_signal, show_progress=self.logger().isEnabledFor(logging.INFO))
+        payload_bit_string = "".join([str(x) for x in payload_decoded.squeeze().tolist()])
+        payload = int(payload_bit_string, 2)
         data_new = data.duplicate()
         if not data_new.has_metadata():
             data_new.set_metadata(dict())
-        data_new.get_metadata()["wavmark-info"] = info
+        data_new.get_metadata()[WAVMARK_INFO] = info
+        data_new.get_metadata()[WAVMARK_PAYLOAD] = payload
         if self.logger().isEnabledFor(logging.DEBUG):
             self.logger().debug("Watermark info: %s" % str(info))
+            self.logger().debug("Watermark payload: %s" % str(payload))
         if self._payload is not None:
-            BER = (self._payload != payload_decoded).mean() * 100
-            data_new.get_metadata()["wavmark-BER"] = BER
+            BER = float((self._payload != payload_decoded).mean() * 100)
+            data_new.get_metadata()[WAVMARK_BER] = BER
             self.logger().info("BER: %s" % str(BER))
         return data_new

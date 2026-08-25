@@ -1,15 +1,18 @@
 # wmd-wavmark
 
 For detecting WavMark watermarks: https://github.com/wavmark/wavmark
-Stores the 'wavmark-BER' field in the metadata when supplying a payload to match against, with 0=perfect match and 100=no match all.
+Stores the BER under 'wavmark-BER' in the metadata when supplying a reference payload, with 0=perfect match and 100=no match all.
+Stores detection info in the meta-data under 'wavmark-info' and the actual payload under 'wavmark-info'.
 
 ```
 usage: wmd-wavmark [-h] [-l {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
                    [-N LOGGER_NAME] [--disable] [-p PAYLOAD] [-d DEVICE]
 
 For detecting WavMark watermarks: https://github.com/wavmark/wavmark Stores
-the 'wavmark-BER' field in the metadata when supplying a payload to match
-against, with 0=perfect match and 100=no match all.
+the BER under 'wavmark-BER' in the metadata when supplying a reference
+payload, with 0=perfect match and 100=no match all. Stores detection info in
+the meta-data under 'wavmark-info' and the actual payload under 'wavmark-
+info'.
 
 options:
   -h, --help            show this help message and exit
