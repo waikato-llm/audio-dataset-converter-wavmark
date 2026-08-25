@@ -178,7 +178,7 @@ class WavMarkDetector(WatermarkDetector):
         :return: the description
         :rtype: str
         """
-        return "For detecting WavMark watermarks: https://github.com/wavmark/wavmark"
+        return "For detecting WavMark watermarks: https://github.com/wavmark/wavmark\nStores the 'wavmark-BER' field in the metadata when supplying a payload to match against, with 0=perfect match and 100=no match all."
 
     def _create_argparser(self) -> argparse.ArgumentParser:
         """
